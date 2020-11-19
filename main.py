@@ -1,10 +1,63 @@
 import tkinter                 # Default
 import PIL.Image, PIL.ImageTk  # pip install pillow
 import cv2                     # pip install opencv-python
+from functools import partial
+import threading
+import imutils
+import time
 
 # Dimentions of main screen
 SET_WIDTH = 703
 SET_HEIGHT = 620
+
+# Functionality for backend
+def play(speed):
+    print(f"Speed is {speed}")
+
+def pending(decision):
+    # 1. Display decision pending image and wait for some time
+
+    frame = cv2.cvtColor(cv2.imread("./img/decision pending.jpg"), cv2.COLOR_BGR2RGB)
+    frame = imutils.resize(frame, width=SET_WIDTH, height=SET_HEIGHT)
+    frame = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
+    canvas.image = frame
+    canvas.create_image(0, 0, image=frame, anchor=tkinter.NW)
+    time.sleep(2)
+
+    # 2. Display sponsors image and wait for some time
+
+    frame = cv2.cvtColor(cv2.imread("./img/developer.jpg"), cv2.COLOR_BGR2RGB)
+    frame = imutils.resize(frame, width=SET_WIDTH, height=SET_HEIGHT)
+    frame = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
+    canvas.image = frame
+    canvas.create_image(0, 0, image=frame, anchor=tkinter.NW)
+    time.sleep(3)
+
+    # 3. Display Decision(OUT/NOT OUT) and wait for some time
+    if decision == 'out':
+        deci_img = "./img/out.jpg"
+    else:
+        deci_img = "./img/not out.jpg"
+    frame = cv2.cvtColor(cv2.imread(deci_img), cv2.COLOR_BGR2RGB)
+    frame = imutils.resize(frame, width=SET_WIDTH, height=SET_HEIGHT)
+    frame = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
+    canvas.image = frame
+    canvas.create_image(0, 0, image=frame, anchor=tkinter.NW)
+    time.sleep(3)
+
+
+def out():
+    thread = threading.Thread(target=pending, args=("out", ))
+    thread.daemon = 1
+    thread.start()
+    print("OUT...........")
+
+
+def not_out():
+    thread = threading.Thread(target=pending, args=("not out",))
+    thread.daemon = 1
+    thread.start()
+    print("NOT OUT...........")
 
 # GUI Setup Starts Here
 
@@ -23,22 +76,22 @@ canvas.pack()
 
 # Setting Buttons to Control Playback
 
-btn = tkinter.Button(window, text="<< Backward (Slow)", width=35, activebackground="yellow", bd=3, bg="#d0fefe", pady=4, font=('Helvetica', '10'), relief="groove")
+btn = tkinter.Button(window, text="<< Backward (Slow)", width=35, activebackground="yellow", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=partial(play, -25))
 btn.place(x=50, y=440)
 
-btn = tkinter.Button(window, text="<< Backward (Fast)", width=35, activebackground="blue", bd=3, bg="#d0fefe", pady=4, font=('Helvetica', '10'), relief="groove")
+btn = tkinter.Button(window, text="<< Backward (Fast)", width=35, activebackground="blue", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=partial(play, -2))
 btn.place(x=50, y=475)
 
-btn = tkinter.Button(window, text="Forward (Slow) >>", width=35, activebackground="yellow", bd=3, bg="#d0fefe", pady=4, font=('Helvetica', '10'), relief="groove")
+btn = tkinter.Button(window, text="Forward (Slow) >>", width=35, activebackground="yellow", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=partial(play, 2))
 btn.place(x=360, y=440)
 
-btn = tkinter.Button(window, text="Forward (Fast) >>", width=35, activebackground="blue", bd=3, bg="#d0fefe", pady=4, font=('Helvetica', '10'), relief="groove")
+btn = tkinter.Button(window, text="Forward (Fast) >>", width=35, activebackground="blue", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=partial(play, 25))
 btn.place(x=360, y=475)
 
-btn = tkinter.Button(window, text="OUT", width=74, activebackground="red", bd=3, bg="#d0fefe", pady=4, font=('Helvetica', '10'), relief="groove")
+btn = tkinter.Button(window, text="OUT", width=74, activebackground="red", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=out)
 btn.place(x=50, y=530)
 
-btn = tkinter.Button(window, text="NOT OUT", width=74, activebackground="green", bd=3, bg="#d0fefe", pady=4, font=('Helvetica', '10'), relief="groove")
+btn = tkinter.Button(window, text="NOT OUT", width=74, activebackground="green", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=not_out)
 btn.place(x=50, y=565)
 
 window.mainloop()
