@@ -11,8 +11,26 @@ SET_WIDTH = 703
 SET_HEIGHT = 620
 
 # Functionality for backend
+stream = cv2.VideoCapture("./clips/s2.mp4")
+flag = True
 def play(speed):
+    global flag
     print(f"Speed is {speed}")
+    frame1 = stream.get(cv2.CAP_PROP_POS_FRAMES)
+    stream.set(cv2.CAP_PROP_POS_FRAMES, frame1 + speed)
+
+    grabbed, frame = stream.read()
+    if not grabbed:
+        exit()
+    frame = imutils.resize(frame, width=SET_WIDTH, height=SET_HEIGHT)
+    frame = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
+    canvas.image = frame
+    canvas.create_image(0, 0, image=frame, anchor=tkinter.NW)
+
+    if flag:
+        canvas.create_text(350, 28, fill="red", font="Times 25 bold", text="Decision Pending")
+    flag = not flag
+
 
 def pending(decision):
     # 1. Display decision pending image and wait for some time
@@ -31,11 +49,11 @@ def pending(decision):
     frame = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
     canvas.image = frame
     canvas.create_image(0, 0, image=frame, anchor=tkinter.NW)
-    time.sleep(3)
+    time.sleep(2)
 
     # 3. Display Decision(OUT/NOT OUT) and wait for some time
     if decision == 'out':
-        deci_img = "./img/out.jpg"
+        deci_img = "./img/out.jpeg"
     else:
         deci_img = "./img/not out.jpg"
     frame = cv2.cvtColor(cv2.imread(deci_img), cv2.COLOR_BGR2RGB)
@@ -76,16 +94,16 @@ canvas.pack()
 
 # Setting Buttons to Control Playback
 
-btn = tkinter.Button(window, text="<< Backward (Slow)", width=35, activebackground="yellow", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=partial(play, -25))
+btn = tkinter.Button(window, text="<< Backward (Slow)", width=35, activebackground="yellow", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=partial(play, -2))
 btn.place(x=50, y=440)
 
-btn = tkinter.Button(window, text="<< Backward (Fast)", width=35, activebackground="blue", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=partial(play, -2))
+btn = tkinter.Button(window, text="<< Backward (Fast)", width=35, activebackground="blue", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=partial(play, -10))
 btn.place(x=50, y=475)
 
-btn = tkinter.Button(window, text="Forward (Slow) >>", width=35, activebackground="yellow", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=partial(play, 2))
+btn = tkinter.Button(window, text="Forward (Slow) >>", width=35, activebackground="yellow", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=partial(play, 0.5))
 btn.place(x=360, y=440)
 
-btn = tkinter.Button(window, text="Forward (Fast) >>", width=35, activebackground="blue", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=partial(play, 25))
+btn = tkinter.Button(window, text="Forward (Fast) >>", width=35, activebackground="blue", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=partial(play, 15))
 btn.place(x=360, y=475)
 
 btn = tkinter.Button(window, text="OUT", width=74, activebackground="red", bd=3, bg="#98fb98", pady=4, font=('Helvetica', '10'), relief="groove", command=out)
