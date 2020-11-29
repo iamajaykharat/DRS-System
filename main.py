@@ -17,7 +17,7 @@ stream = cv2.VideoCapture("./clips/s2.mp4")
 flag = True
 def play(speed):
     global flag
-    print(f"Speed is {speed}")
+    # print(f"Speed is {speed}")
     frame1 = stream.get(cv2.CAP_PROP_POS_FRAMES)
     stream.set(cv2.CAP_PROP_POS_FRAMES, frame1 + speed)
 
